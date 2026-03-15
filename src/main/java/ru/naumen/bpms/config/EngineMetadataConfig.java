@@ -7,10 +7,10 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class EngineMetadataConfig {
 
-    @Value("${app.name}")
+    @Value("${app.name:BPMS}")
     private String name;
 
-    @Value("${app.version}")
+    @Value("${app.version:undefined}")
     private String version;
 
     @PostConstruct
