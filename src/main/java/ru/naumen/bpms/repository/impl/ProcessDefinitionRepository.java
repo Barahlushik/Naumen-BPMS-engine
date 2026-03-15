@@ -5,11 +5,13 @@ import ru.naumen.bpms.model.ProcessDefinition;
 import ru.naumen.bpms.repository.CrudRepository;
 
 import java.util.List;
+import java.util.concurrent.atomic.AtomicLong;
 
 @Repository
 public class ProcessDefinitionRepository implements CrudRepository<ProcessDefinition, Long> {
 
     private final List<ProcessDefinition> store;
+    private final AtomicLong idSeq = new AtomicLong(1);
 
     public ProcessDefinitionRepository(List<ProcessDefinition> store) {
         this.store = store;
@@ -18,6 +20,7 @@ public class ProcessDefinitionRepository implements CrudRepository<ProcessDefini
 
     @Override
     public void create(ProcessDefinition entity) {
+        entity.setId(idSeq.getAndIncrement());
         store.add(entity);
     }
 
@@ -46,11 +49,11 @@ public class ProcessDefinitionRepository implements CrudRepository<ProcessDefini
 
     @Override
     public void delete(Long id) {
-        ProcessDefinition toRemove = store.stream()
-                .filter(pd -> pd.getId().equals(id))
-                .findFirst()
-                .orElseThrow(() ->
-                        new IllegalArgumentException("ProcessDefinition с id=" + id + " не найден."));
-        store.remove(toRemove);
+        boolean removed = store.removeIf(pd -> pd.getId().equals(id));
+
+        if (!removed) {
+            throw new IllegalArgumentException("ProcessDefinition с id=" + id + " не найден.");
+        }
+
     }
 }
