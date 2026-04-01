@@ -1,0 +1,4 @@
+databaseChangeLog:
+  - include:
+      file: db/changelog/changes/V_0_0_1__init_bpms_schema.sql
+      relativeToChangelogFile: false
