@@ -21,8 +21,8 @@
         <postgresql.version>42.6.2</postgresql.version>
     </properties>
 
-    <dependencies>
 
+    <dependencies>
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter</artifactId>
