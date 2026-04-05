@@ -47,8 +47,9 @@ public class Transition {
     protected Transition() {
     }
 
-    public Transition(StepDefinition toStep, String condition) {
+    public Transition(StepDefinition toStep, StepDefinition fromStep, String condition) {
         this.toStep = toStep;
+        this.fromStep = fromStep;
         this.condition = condition;
     }
 
