@@ -1,10 +1,14 @@
 package ru.naumen.bpms.service;
 
-import ru.naumen.bpms.model.ProcessDefinition;
+import jakarta.validation.Valid;
+import jakarta.validation.constraints.NotNull;
 
-public interface ProcessService {
-    void createProcess(ProcessDefinition processDefinition);
-    ProcessDefinition getProcess(Long id);
-    void updateProcess(ProcessDefinition processDefinition);
-    void deleteProcess(Long id);
+import java.util.List;
+
+public interface ProcessService<Proc, ID> {
+    Proc createProcess(@NotNull @Valid Proc process);
+    Proc getProcess(@NotNull ID id);
+    List<Proc> getAllProcesses();
+    Proc updateProcess(@NotNull Proc process);
+    void deleteProcess(@NotNull ID id);
 }

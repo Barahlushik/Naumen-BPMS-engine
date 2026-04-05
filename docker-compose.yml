@@ -1,0 +1,56 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:16
+    container_name: bpms-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: bpms
+      POSTGRES_USER: bpms_user
+      POSTGRES_PASSWORD: bpms_password
+    ports:
+      - "5432:5432"
+    volumes:
+      - bpms_postgres_data:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U bpms_user -d bpms"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: bpms-app
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres:5432/bpms
+      SPRING_DATASOURCE_USERNAME: bpms_user
+      SPRING_DATASOURCE_PASSWORD: bpms_password
+      SPRING_JPA_HIBERNATE_DDL_AUTO: none
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      SERVER_PORT: 8080
+    ports:
+      - "8080:8080"
+
+  pgweb:
+    image: sosedoff/pgweb:0.16.2
+    container_name: bpms-pgweb
+    restart: unless-stopped
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      DATABASE_URL: postgres://bpms_user:bpms_password@postgres:5432/bpms?sslmode=disable
+    ports:
+      - "8081:8081"
+    command: ["--bind=0.0.0.0", "--listen=8081"]
+
+volumes:
+  bpms_postgres_data:
+  bpms_pgadmin_data:

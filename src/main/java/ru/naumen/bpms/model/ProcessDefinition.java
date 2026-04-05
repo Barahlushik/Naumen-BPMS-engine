@@ -1,50 +1,74 @@
 package ru.naumen.bpms.model;
 
-import java.util.Objects;
+import jakarta.persistence.*;
 
+import java.util.ArrayList;
+import java.util.List;
+
+
+@Entity
+@Table(name = "process_definitions")
 public class ProcessDefinition {
 
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(nullable = false, length = 150)
     private String title;
+
+    @Column(length = 60)
+    private String category;
+
+    @Column(length = 500)
     private String description;
 
-    public ProcessDefinition() {
+    @OneToMany(
+            mappedBy = "processDefinition",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<StepDefinition> steps = new ArrayList<>();
+
+    @OneToMany(
+            mappedBy = "processDefinition",
+            cascade = CascadeType.ALL,
+            orphanRemoval = true
+    )
+    private List<Transition> transitions = new ArrayList<>();
+
+    protected ProcessDefinition() {
     }
 
-    public ProcessDefinition(Long id, String title, String description) {
-        this.id = id;
+    public ProcessDefinition(String title, String description) {
         this.title = title;
         this.description = description;
     }
 
-    public Long getId() {return id;}
-    public void setId(Long id) {this.id = id;}
-
-    public String getTitle() {return title;}
-    public void setTitle(String title) {this.title = title;}
-
-    public String getDescription() {return description;}
-    public void setDescription(String description) {this.description = description;}
-
-
-    @Override
-    public boolean equals(Object o) {
-        if (o == null || getClass() != o.getClass()) return false;
-        ProcessDefinition that = (ProcessDefinition) o;
-        return Objects.equals(id, that.id) && Objects.equals(title, that.title) && Objects.equals(description, that.description);
+    public void addStep(StepDefinition step) {
+        step.setProcessDefinition(this);
+        steps.add(step);
     }
 
-    @Override
-    public int hashCode() {
-        return Objects.hash(id, title, description);
+    public void addTransition(Transition transition) {
+        transition.setProcessDefinition(this);
+        transitions.add(transition);
     }
 
-    @Override
-    public String toString() {
-        return "ProcessDefinition{" +
-                "id=" + id +
-                ", title='" + title + '\'' +
-                ", description='" + description + '\'' +
-                '}';
-    }
+    public Long getId() { return id; }
+
+    public String getTitle() { return title; }
+    public void setTitle(String title) {this.title = title; }
+
+    public String getDescription() { return description; }
+    public void setDescription(String description) { this.description = description; }
+
+    public List<StepDefinition> getSteps() { return steps; }
+    public void setSteps(List<StepDefinition> steps) { this.steps = steps; }
+
+    public List<Transition> getTransitions() { return transitions; }
+    public void setTransitions(List<Transition> transitions) { this.transitions = transitions; }
+
+    public String getCategory() { return category; }
+    public void setCategory(String category) { this.category = category; }
 }
