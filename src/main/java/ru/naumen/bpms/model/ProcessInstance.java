@@ -7,6 +7,7 @@ import java.time.LocalDateTime;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
+@Entity
 @Table(
         name = "process_instances",
         indexes = {
