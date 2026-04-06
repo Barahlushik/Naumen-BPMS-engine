@@ -1,0 +1,86 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>BPMS мета-процессов</title>
+    <link rel="stylesheet" th:href="@{/css/style.css}">
+</head>
+<body>
+
+<h1>Доступные шаблоны процессов</h1>
+<div class="hint">
+    Нажмите на <b>ProcessDefinition</b>, чтобы раскрыть шаги. Нажмите на <b>StepDefinition</b>, чтобы раскрыть переходы.
+</div>
+
+<table>
+    <thead>
+    <tr>
+        <th>Тип</th>
+        <th>ID</th>
+        <th>Название</th>
+        <th>Доп. информация</th>
+    </tr>
+    </thead>
+    <tbody>
+
+    <th:block th:each="process : ${processDefinitions}">
+        <tr class="process-row"
+            th:attr="data-process-id=${process.id}"
+            onclick="toggleProcess(this)">
+            <td>
+                <span class="toggle-sign">+</span>
+                ProcessDefinition
+            </td>
+            <td th:text="${process.id}">1</td>
+            <td th:text="${process.title}">Expense Approval</td>
+            <td>
+                <div><span class="badge">category</span> <span th:text="${process.category} ?: '—'">Finance</span></div>
+                <div><span class="badge">description</span> <span th:text="${process.description} ?: '—'">Description</span></div>
+            </td>
+        </tr>
+
+        <th:block th:each="step : ${process.steps}">
+            <tr class="step-row hidden"
+                th:attr="data-parent-process=${process.id},data-step-id=${step.id}"
+                onclick="toggleStep(event, this)">
+                <td class="indent-1">
+                    <span class="toggle-sign">+</span>
+                    StepDefinition
+                </td>
+                <td th:text="${step.id}">10</td>
+                <td th:text="${step.name}">Approve request</td>
+                <td>
+                    <span class="badge">type</span>
+                    <span th:text="${step.type}">USER_TASK</span>
+                </td>
+            </tr>
+
+            <th:block th:each="transition : ${step.outgoingTransitions}">
+                <tr class="transition-row hidden"
+                    th:attr="data-parent-step=${step.id}">
+                    <td class="indent-2">Transition</td>
+                    <td th:text="${transition.id}">100</td>
+                    <td th:text="${transition.name}">approve_to_end</td>
+                    <td>
+                        <div>
+                            <span class="badge">fromStep</span>
+                            <span th:text="${transition.fromStep != null ? transition.fromStep.name : '—'}">Approve</span>
+                        </div>
+                        <div>
+                            <span class="badge">toStep</span>
+                            <span th:text="${transition.toStep != null ? transition.toStep.name : '—'}">End</span>
+                        </div>
+                        <div>
+                            <span class="badge">condition</span>
+                            <span th:text="${#strings.isEmpty(transition.condition) ? '—' : transition.condition}"></span>
+                        </div>
+                    </td>
+                </tr>
+            </th:block>
+        </th:block>
+    </th:block>
+    </tbody>
+</table>
+<script th:src="@{/js/script.js}"></script>
+</body>
+</html>
