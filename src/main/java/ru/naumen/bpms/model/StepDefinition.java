@@ -3,8 +3,8 @@ package ru.naumen.bpms.model;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 @Entity
 @Table(
@@ -40,7 +40,7 @@ public class StepDefinition {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<Transition> outgoingTransitions = new ArrayList<>();
+    private Set<Transition> outgoingTransitions = new LinkedHashSet<>();
 
     protected StepDefinition() {
     }
@@ -75,11 +75,11 @@ public class StepDefinition {
         this.processDefinition = processDefinition;
     }
 
-    public List<Transition> getOutgoingTransitions() {
+    public Set<Transition> getOutgoingTransitions() {
         return outgoingTransitions;
     }
 
-    public void setOutgoingTransitions(List<Transition> outgoingTransitions) {
+    public void setOutgoingTransitions(Set<Transition> outgoingTransitions) {
         this.outgoingTransitions = outgoingTransitions;
     }
 }

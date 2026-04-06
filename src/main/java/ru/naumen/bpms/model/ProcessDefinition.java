@@ -2,8 +2,8 @@ package ru.naumen.bpms.model;
 
 import jakarta.persistence.*;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.LinkedHashSet;
+import java.util.Set;
 
 
 @Entity
@@ -28,14 +28,14 @@ public class ProcessDefinition {
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<StepDefinition> steps = new ArrayList<>();
+    private Set<StepDefinition> steps = new LinkedHashSet<>();
 
     @OneToMany(
             mappedBy = "processDefinition",
             cascade = CascadeType.ALL,
             orphanRemoval = true
     )
-    private List<Transition> transitions = new ArrayList<>();
+    private Set<Transition> transitions = new LinkedHashSet<>();
 
     protected ProcessDefinition() {
     }
@@ -63,11 +63,11 @@ public class ProcessDefinition {
     public String getDescription() { return description; }
     public void setDescription(String description) { this.description = description; }
 
-    public List<StepDefinition> getSteps() { return steps; }
-    public void setSteps(List<StepDefinition> steps) { this.steps = steps; }
+    public Set<StepDefinition> getSteps() { return steps; }
+    public void setSteps(Set<StepDefinition> steps) { this.steps = steps; }
 
-    public List<Transition> getTransitions() { return transitions; }
-    public void setTransitions(List<Transition> transitions) { this.transitions = transitions; }
+    public Set<Transition> getTransitions() { return transitions; }
+    public void setTransitions(Set<Transition> transitions) { this.transitions = transitions; }
 
     public String getCategory() { return category; }
     public void setCategory(String category) { this.category = category; }

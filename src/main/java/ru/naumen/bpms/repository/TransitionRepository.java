@@ -2,11 +2,13 @@ package ru.naumen.bpms.repository;
 
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.rest.core.annotation.RepositoryRestResource;
 import ru.naumen.bpms.model.Transition;
 
 import java.util.List;
 import java.util.Optional;
 
+@RepositoryRestResource(path = "transitions", collectionResourceRel = "transitions")
 public interface TransitionRepository extends CrudRepository<Transition, Long> {
 
 
