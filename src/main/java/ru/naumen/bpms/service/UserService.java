@@ -23,5 +23,5 @@ public interface UserService {
                     UserRole role,
                     boolean active);
 
-    void deactivateUser(Long userId);
+
 }

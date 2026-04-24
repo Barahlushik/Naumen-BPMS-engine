@@ -117,12 +117,12 @@ public class User {
         this.active = active;
     }
 
-    public String getPasswordHash() {
+    public String getPassword() {
         return passwordHash;
     }
 
-    public void changePassword(String rawPassword) {
-        this.passwordHash = hashPassword(rawPassword);
+    public void changePassword(String encodedPassword) {
+        this.passwordHash = encodedPassword;
     }
 
     public void activate() {
