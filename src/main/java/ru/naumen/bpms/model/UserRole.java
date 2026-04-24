@@ -1,6 +1,6 @@
 package ru.naumen.bpms.model;
 
 public enum UserRole {
-    EMPLOYEE,
-    ADMIN
+    ROLE_USER,
+    ROLE_ADMIN
 }

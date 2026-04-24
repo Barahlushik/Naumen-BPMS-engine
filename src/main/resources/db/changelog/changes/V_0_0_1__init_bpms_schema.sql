@@ -136,3 +136,18 @@ CREATE INDEX idx_process_instances_status
 
 CREATE INDEX idx_pip_user_id
     ON public.process_instance_participants (user_id);
+
+
+--changeset barahlush:0.0.2-fix-users-role-check
+ALTER TABLE public.users DROP CONSTRAINT chk_users_role;
+
+UPDATE public.users
+SET role = CASE role
+               WHEN 'EMPLOYEE' THEN 'ROLE_USER'
+               WHEN 'ADMIN' THEN 'ROLE_ADMIN'
+               ELSE role
+    END;
+
+ALTER TABLE public.users
+    ADD CONSTRAINT chk_users_role
+        CHECK (role IN ('ROLE_USER', 'ROLE_ADMIN'));

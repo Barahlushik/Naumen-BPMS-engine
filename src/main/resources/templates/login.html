@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Вход в систему</title>
+
+    <link rel="stylesheet" th:href="@{/css/auth-common.css}">
+    <link rel="stylesheet" th:href="@{/css/login.css}">
+    <script defer th:src="@{/js/auth.js}"></script>
+</head>
+<body class="auth-page auth-page--login">
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-card__header">
+            <h1 class="auth-card__title">Добро пожаловать</h1>
+            <p class="auth-card__subtitle">Войдите в BPMS, используя логин и пароль</p>
+        </div>
+
+        <div th:if="${param.error}" class="auth-alert auth-alert--error" role="alert">
+            Неверное имя пользователя или пароль.
+        </div>
+
+        <div th:if="${param.logout}" class="auth-alert auth-alert--success" role="status">
+            Вы успешно вышли из системы.
+        </div>
+
+        <form class="auth-form" th:action="@{/login}" method="post">
+            <div class="auth-form__group">
+                <label class="auth-form__label" for="username">Имя пользователя</label>
+                <input
+                        class="auth-form__input"
+                        id="username"
+                        type="text"
+                        name="username"
+                        placeholder="Введите username"
+                        autocomplete="username"
+                        required
+                >
+            </div>
+
+            <div class="auth-form__group">
+                <label class="auth-form__label" for="password">Пароль</label>
+                <input
+                        class="auth-form__input"
+                        id="password"
+                        type="password"
+                        name="password"
+                        placeholder="Введите пароль"
+                        autocomplete="current-password"
+                        required
+                >
+            </div>
+
+            <button class="auth-form__button auth-form__button--primary" type="submit">
+                Войти
+            </button>
+        </form>
+
+        <div class="auth-card__footer">
+            <span>Нет аккаунта?</span>
+            <a class="auth-link" th:href="@{/register}">Зарегистрироваться</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>

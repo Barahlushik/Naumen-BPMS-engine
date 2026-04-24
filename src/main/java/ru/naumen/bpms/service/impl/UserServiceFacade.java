@@ -1,7 +1,6 @@
 package ru.naumen.bpms.service.impl;
 
-import jakarta.validation.constraints.NotNull;
-import jakarta.validation.constraints.Positive;
+import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.validation.annotation.Validated;
 import ru.naumen.bpms.model.User;
@@ -16,8 +15,12 @@ import ru.naumen.bpms.service.exception.user.UserNotFoundException;
 public class UserServiceFacade implements UserService {
     private final UserRepository userRepository;
 
-    public UserServiceFacade(UserRepository userRepository) {
+    private final PasswordEncoder passwordEncoder;
+
+    public UserServiceFacade(UserRepository userRepository,
+                             PasswordEncoder passwordEncoder) {
         this.userRepository = userRepository;
+        this.passwordEncoder = passwordEncoder;
     }
 
     @Override
@@ -34,13 +37,24 @@ public class UserServiceFacade implements UserService {
         if (userRepository.findByEmail(email).isPresent()) {
             throw new UserAlreadyExistException(String.format("Пользователь c email %s уже существует", email));
         }
-        User user = new User(username, displayName, email, role, active, rawPassword);
+
+        User user = new User(
+                username,
+                displayName,
+                email,
+                role,
+                active,
+                null
+        );
+
+        user.changePassword(passwordEncoder.encode(rawPassword));
+
         return userRepository.save(user);
 
     }
 
     @Override
-    public User getUserById(@NotNull @Positive Long id) {
+    public User getUserById(Long id) {
         return userRepository.findById(id)
                 .orElseThrow(() -> new UserNotFoundException(String.format("Пользователь с id=%d не найден.", id)));
     }
@@ -53,7 +67,7 @@ public class UserServiceFacade implements UserService {
 
 
     @Override
-    public User updateUser(@NotNull @Positive Long id,
+    public User updateUser(Long id,
                            String uname,
                            String displayName,
                            String email,
@@ -72,11 +86,5 @@ public class UserServiceFacade implements UserService {
         return userRepository.save(user);
     }
 
-    @Override
-    public void deactivateUser(@NotNull @Positive Long id) {
-        User user = getUserById(id);
-        user.deactivate();
-        userRepository.save(user);
-    }
 
 }
