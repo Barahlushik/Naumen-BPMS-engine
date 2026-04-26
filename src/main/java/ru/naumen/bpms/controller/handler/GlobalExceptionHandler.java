@@ -13,6 +13,7 @@ import ru.naumen.bpms.service.exception.process.ProcessDefinitionNotFoundExcepti
 import ru.naumen.bpms.service.exception.process.ProcessInstanceNotFoundException;
 import ru.naumen.bpms.service.exception.process.StepNotFoundException;
 import ru.naumen.bpms.service.exception.process.TransitionNotFoundException;
+import ru.naumen.bpms.service.exception.report.ReportNotFoundException;
 import ru.naumen.bpms.service.exception.user.UserAlreadyExistException;
 import ru.naumen.bpms.service.exception.user.UserNotFoundException;
 
@@ -27,7 +28,8 @@ public class GlobalExceptionHandler {
             ProcessInstanceNotFoundException.class,
             StepNotFoundException.class,
             TransitionNotFoundException.class,
-            UserNotFoundException.class
+            UserNotFoundException.class,
+            ReportNotFoundException.class
     })
     public ResponseEntity<ApiErrorResponse> handleNotFound(
             BpmsException ex,

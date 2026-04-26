@@ -1,0 +1,15 @@
+<!doctype html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>BPMS Home</title>
+</head>
+<body>
+<h1>BPMS Home</h1>
+<p>Вы успешно вошли в систему.</p>
+
+<form th:action="@{/logout}" method="post">
+    <button id="logout-button" type="submit">Выйти</button>
+</form>
+</body>
+</html>
