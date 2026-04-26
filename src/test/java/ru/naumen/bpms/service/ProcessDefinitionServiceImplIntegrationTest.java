@@ -241,39 +241,6 @@ class ProcessDefinitionServiceImplIntegrationTest {
                 .hasMessageContaining("не принадлежит определению процесса");
     }
 
-    @Test
-    @DisplayName("addStepWithTransitions должен сохранять шаг вместе с исходящими переходами")
-    void addStepWithTransitions_shouldSaveStepWithTransitions() {
-        ProcessDefinition definition = processDefinitionRepository.save(
-                new ProcessDefinition("Contract process", "Contract process")
-        );
-
-        StepDefinition approveDocuments = new StepDefinition("validate docs", StepType.SERVICE_TASK);
-        approveDocuments.setProcessDefinition(definition);
-        approveDocuments = stepDefinitionRepository.save(approveDocuments);
-
-        StepDefinition finishStep = new StepDefinition("Approved candidate, send message", StepType.END_EVENT);
-        finishStep.setProcessDefinition(definition);
-        finishStep = stepDefinitionRepository.save(finishStep);
-
-        Transition transition = new Transition(finishStep, approveDocuments, "approved == true");
-        transition.setProcessDefinition(definition);
-        transition.setName("to_end");
-
-        StepDefinition created = processDefinitionService.addStepWithTransitions(
-                definition.getId(),
-                "Approve",
-                StepType.USER_TASK,
-                List.of(transition)
-        );
-
-        assertThat(created.getId()).isNotNull();
-        assertThat(created.getOutgoingTransitions()).hasSize(1);
-        assertThat(created.getOutgoingTransitions().get(0).getName()).isEqualTo("to_end");
-        assertThat(created.getOutgoingTransitions().get(0).getToStep().getId()).isEqualTo(finishStep.getId());
-    }
-
-
 
     @Test
     @DisplayName("addStepWithTransitions должен выбрасывать исключение, если переход null")

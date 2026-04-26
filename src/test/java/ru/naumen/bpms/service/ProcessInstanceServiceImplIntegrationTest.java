@@ -7,10 +7,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.test.context.ActiveProfiles;
 import ru.naumen.bpms.model.*;
-import ru.naumen.bpms.repository.ProcessDefinitionRepository;
-import ru.naumen.bpms.repository.ProcessInstanceRepository;
-import ru.naumen.bpms.repository.StepDefinitionRepository;
-import ru.naumen.bpms.repository.UserRepository;
+import ru.naumen.bpms.repository.*;
 import ru.naumen.bpms.service.exception.process.ProcessInstanceException;
 import ru.naumen.bpms.service.impl.ProcessInstanceServiceImpl;
 
@@ -36,9 +33,13 @@ class ProcessInstanceServiceImplIntegrationTest {
     @Autowired
     private UserRepository userRepository;
 
+    @Autowired
+    private TransitionRepository transitionRepository;
+
     @BeforeEach
     void cleanUp() {
         processInstanceRepository.deleteAll();
+        transitionRepository.deleteAll();
         stepDefinitionRepository.deleteAll();
         processDefinitionRepository.deleteAll();
         userRepository.deleteAll();
@@ -50,7 +51,7 @@ class ProcessInstanceServiceImplIntegrationTest {
 
         User owner = userRepository.save(
                 new User("owner_user", "Owner User", "owner@test.local",
-                        UserRole.EMPLOYEE, true, "StrongPassword")
+                        UserRole.ROLE_USER, true, "StrongPassword")
         );
 
         ProcessDefinition definition = new ProcessDefinition("Leave Request", "Leave request process");
@@ -86,7 +87,7 @@ class ProcessInstanceServiceImplIntegrationTest {
 
         User owner = userRepository.save(
                 new User("non-active_owner", "Non-active Owner", "non-active_owner@test.local",
-                        UserRole.EMPLOYEE, false, "StrongPassword")
+                        UserRole.ROLE_USER, false, "StrongPassword")
         );
 
         ProcessDefinition definition = new ProcessDefinition("Expense Approval", "Expense approval process");
