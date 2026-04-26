@@ -43,7 +43,7 @@ class ProcessInstanceCriteriaRepositoryTest {
                         "johnsmith",
                         "John Smith",
                         "john@example.com",
-                        UserRole.EMPLOYEE,
+                        UserRole.ROLE_USER,
                         true,
                         "StrongPassword"
                 )
@@ -83,7 +83,7 @@ class ProcessInstanceCriteriaRepositoryTest {
                         "janesmith",
                         "Jane Smith",
                         "jane@example.com",
-                        UserRole.EMPLOYEE,
+                        UserRole.ROLE_USER,
                         true,
                         "AnotherStrong"
                 )
@@ -103,7 +103,7 @@ class ProcessInstanceCriteriaRepositoryTest {
                         "alexuser",
                         "Alex User",
                         "alex@example.com",
-                        UserRole.EMPLOYEE,
+                        UserRole.ROLE_USER,
                         true,
                         "StrongPassWord"
                 )

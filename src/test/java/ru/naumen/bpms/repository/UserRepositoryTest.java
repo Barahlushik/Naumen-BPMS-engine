@@ -28,7 +28,7 @@ class UserRepositoryTest {
                         "lolik",
                         "kekolik",
                         "marik.kriger@mail.ru",
-                        UserRole.EMPLOYEE,
+                        UserRole.ROLE_USER,
                         true,
                         "StrongPassword"
                 )
@@ -58,7 +58,7 @@ class UserRepositoryTest {
                         "lolik",
                         "kekolik",
                         "marik.kriger@mail.ru",
-                        UserRole.EMPLOYEE,
+                        UserRole.ROLE_USER,
                         true,
                         "StrongPassword"
                 )
@@ -88,7 +88,7 @@ class UserRepositoryTest {
                         "activeuser",
                         "Active User",
                         "active@example.com",
-                        UserRole.EMPLOYEE,
+                        UserRole.ROLE_USER,
                         true,
                         "VeryStrongPwd"
                 )
@@ -109,7 +109,7 @@ class UserRepositoryTest {
                         "inactiveuser",
                         "Inactive User",
                         "inactive@example.com",
-                        UserRole.EMPLOYEE,
+                        UserRole.ROLE_USER,
                         false,
                         "VeryStrongPwd"
                 )
@@ -136,7 +136,7 @@ class UserRepositoryTest {
                         "existinguser",
                         "Existing User",
                         "existing@example.com",
-                        UserRole.EMPLOYEE,
+                        UserRole.ROLE_USER,
                         true,
                         "StrongPassWord"
                 )
@@ -163,7 +163,7 @@ class UserRepositoryTest {
                         "mailuser",
                         "Mail User",
                         "mail@example.com",
-                        UserRole.ADMIN,
+                        UserRole.ROLE_ADMIN,
                         true,
                         "PasswordStrong"
                 )

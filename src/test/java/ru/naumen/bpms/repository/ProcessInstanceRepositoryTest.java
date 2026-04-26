@@ -38,7 +38,7 @@ class ProcessInstanceRepositoryTest {
                         "johnsmith",
                         "John Smith",
                         "john@example.com",
-                        UserRole.EMPLOYEE,
+                        UserRole.ROLE_USER,
                         true,
                         "StrongPassword"
                 )
@@ -75,7 +75,7 @@ class ProcessInstanceRepositoryTest {
                         "janesmith",
                         "Jane Smith",
                         "jane@example.com",
-                        UserRole.EMPLOYEE,
+                        UserRole.ROLE_USER,
                         true,
                         "AnotherStrong"
                 )
@@ -95,7 +95,7 @@ class ProcessInstanceRepositoryTest {
                         "owneruser",
                         "Owner User",
                         "owner@example.com",
-                        UserRole.EMPLOYEE,
+                        UserRole.ROLE_USER,
                         true,
                         "StrongPassword"
                 )
@@ -106,7 +106,7 @@ class ProcessInstanceRepositoryTest {
                         "participantuser",
                         "Participant User",
                         "participant@example.com",
-                        UserRole.EMPLOYEE,
+                        UserRole.ROLE_USER,
                         true,
                         "AnotherStrong"
                 )
@@ -153,7 +153,7 @@ class ProcessInstanceRepositoryTest {
                         "alexuser",
                         "Alex User",
                         "alex@example.com",
-                        UserRole.EMPLOYEE,
+                        UserRole.ROLE_USER,
                         true,
                         "VeryStrongPwd"
                 )
@@ -164,7 +164,7 @@ class ProcessInstanceRepositoryTest {
                         "revieweruser",
                         "Reviewer User",
                         "reviewer@example.com",
-                        UserRole.ADMIN,
+                        UserRole.ROLE_ADMIN,
                         true,
                         "PasswordStrong"
                 )
