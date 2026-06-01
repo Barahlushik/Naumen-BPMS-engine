@@ -1,0 +1,16 @@
+.auth-page--login {
+    background:
+            radial-gradient(circle at top left, rgba(59, 130, 246, 0.25), transparent 34%),
+            radial-gradient(circle at bottom right, rgba(37, 99, 235, 0.22), transparent 30%),
+            linear-gradient(135deg, #0f172a 0%, #1e293b 55%, #1d4ed8 100%);
+}
+
+.auth-form__button--primary {
+    background: linear-gradient(135deg, #2563eb, #1d4ed8);
+    color: #ffffff;
+    box-shadow: 0 12px 24px rgba(37, 99, 235, 0.28);
+}
+
+.auth-form__button--primary:hover {
+    box-shadow: 0 16px 28px rgba(37, 99, 235, 0.34);
+}

@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="ru" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Регистрация</title>
+
+    <link rel="stylesheet" th:href="@{/css/auth-common.css}">
+    <link rel="stylesheet" th:href="@{/css/register.css}">
+    <script defer th:src="@{/js/auth.js}"></script>
+</head>
+<body class="auth-page auth-page--register">
+<div class="auth-container">
+    <div class="auth-card">
+        <div class="auth-card__header">
+            <h1 class="auth-card__title">Создание аккаунта</h1>
+            <p class="auth-card__subtitle">Заполните данные для регистрации в BPMS</p>
+        </div>
+
+        <div th:if="${registrationError}" class="auth-alert auth-alert--error" role="alert">
+            <span th:text="${registrationError}"></span>
+        </div>
+
+        <form class="auth-form" th:action="@{/register}" method="post">
+            <div class="auth-form__group">
+                <label class="auth-form__label" for="username">Имя пользователя</label>
+                <input
+                        class="auth-form__input"
+                        id="username"
+                        type="text"
+                        name="username"
+                        placeholder="Введите username"
+                        autocomplete="username"
+                        required
+                >
+            </div>
+
+            <div class="auth-form__group">
+                <label class="auth-form__label" for="displayName">Отображаемое имя</label>
+                <input
+                        class="auth-form__input"
+                        id="displayName"
+                        type="text"
+                        name="displayName"
+                        placeholder="Введите ваше имя"
+                        autocomplete="name"
+                        required
+                >
+            </div>
+
+            <div class="auth-form__group">
+                <label class="auth-form__label" for="email">Email</label>
+                <input
+                        class="auth-form__input"
+                        id="email"
+                        type="email"
+                        name="email"
+                        placeholder="Введите email"
+                        autocomplete="email"
+                        required
+                >
+            </div>
+
+            <div class="auth-form__group">
+                <label class="auth-form__label" for="password">Пароль</label>
+                <input
+                        class="auth-form__input"
+                        id="password"
+                        type="password"
+                        name="password"
+                        placeholder="Минимум 12 символов, латиница, верхний и нижний регистр"
+                        autocomplete="new-password"
+                        required
+                >
+            </div>
+
+            <button class="auth-form__button auth-form__button--success" type="submit">
+                Зарегистрироваться
+            </button>
+        </form>
+
+        <div class="auth-card__footer">
+            <span>Уже есть аккаунт?</span>
+            <a class="auth-link" th:href="@{/login}">Войти</a>
+        </div>
+    </div>
+</div>
+</body>
+</html>
