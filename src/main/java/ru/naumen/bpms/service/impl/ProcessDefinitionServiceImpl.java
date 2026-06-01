@@ -1,5 +1,6 @@
 package ru.naumen.bpms.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
@@ -17,6 +18,7 @@ import java.util.List;
 
 @Service
 @Validated
+@Slf4j
 public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
 
     private final ProcessDefinitionRepository processDefinitionRepository;
@@ -34,7 +36,10 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
     @Override
     @Transactional
     public ProcessDefinition createProcess(ProcessDefinition process) {
-        return processDefinitionRepository.save(process);
+        ProcessDefinition savedProcess = processDefinitionRepository.save(process);
+        log.info("Process definition created. processDefinitionId={}, title={}",
+                savedProcess.getId(), savedProcess.getTitle());
+        return savedProcess;
     }
 
     @Override
@@ -75,7 +80,10 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
         existing.setDescription(process.getDescription());
         existing.setCategory(process.getCategory());
 
-        return processDefinitionRepository.save(existing);
+        ProcessDefinition savedProcess = processDefinitionRepository.save(existing);
+        log.info("Process definition updated. processDefinitionId={}, title={}",
+                savedProcess.getId(), savedProcess.getTitle());
+        return savedProcess;
     }
 
     @Override
@@ -92,6 +100,7 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
                 ));
 
         processDefinitionRepository.delete(existing);
+        log.info("Process definition deleted. processDefinitionId={}", id);
     }
 
     @Override
@@ -110,6 +119,49 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
                 .orElseThrow(() -> new ProcessDefinitionNotFoundException(
                         String.format("Определение процесса с id=%d не найдено.", id)
                 ));
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public ProcessDefinition getProcessByStepId(Long stepId) {
+        ProcessDefinition processDefinition = processDefinitionRepository.findByStepId(stepId)
+                .orElseThrow(() -> new ProcessDefinitionNotFoundException(
+                        String.format("Определение процесса по stepId=%d не найдено.", stepId)
+                ));
+
+        log.info("Process definition found by step. stepId={}, processDefinitionId={}",
+                stepId, processDefinition.getId());
+        return processDefinition;
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProcessDefinition> getAllProcessesWithStepsAndTransitions() {
+        List<ProcessDefinition> processDefinitions = processDefinitionRepository.findAllWithStepsAndTransitions();
+        log.info("Process definitions loaded with steps and transitions. processDefinitionsCount={}",
+                processDefinitions.size());
+        return processDefinitions;
+    }
+
+    @Override
+    @Transactional
+    public ProcessDefinition updateProcess(Long id,
+                                           String title,
+                                           String description,
+                                           String category) {
+        ProcessDefinition existing = processDefinitionRepository.findById(id)
+                .orElseThrow(() -> new ProcessDefinitionNotFoundException(
+                        String.format("Определение процесса с id=%d не найдено.", id)
+                ));
+
+        existing.setTitle(title);
+        existing.setDescription(description);
+        existing.setCategory(category);
+
+        ProcessDefinition savedProcess = processDefinitionRepository.save(existing);
+        log.info("Process definition updated. processDefinitionId={}, title={}",
+                savedProcess.getId(), savedProcess.getTitle());
+        return savedProcess;
     }
 
     @Override
@@ -148,7 +200,10 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
         StepDefinition step = new StepDefinition(stepName, stepType);
         processDefinition.addStep(step);
 
-        return stepDefinitionRepository.save(step);
+        StepDefinition savedStep = stepDefinitionRepository.save(step);
+        log.info("Step added to process definition. processDefinitionId={}, stepId={}, stepType={}",
+                processDefinitionId, savedStep.getId(), savedStep.getType());
+        return savedStep;
     }
 
     @Override
@@ -211,7 +266,10 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
 
         processDefinition.addStep(step);
 
-        return stepDefinitionRepository.save(step);
+        StepDefinition savedStep = stepDefinitionRepository.save(step);
+        log.info("Step with transitions added to process definition. processDefinitionId={}, stepId={}, transitionsCount={}",
+                processDefinitionId, savedStep.getId(), transitions.size());
+        return savedStep;
     }
 
     @Override
@@ -269,11 +327,14 @@ public class ProcessDefinitionServiceImpl implements ProcessDefinitionService {
             );
         }
 
-        Transition transition = new Transition(toStep,fromStep, condition);
+        Transition transition = new Transition(fromStep, toStep, condition);
         transition.setName(transitionName);
         transition.setProcessDefinition(processDefinition);
         transition.setFromStep(fromStep);
 
-        return transitionRepository.save(transition);
+        Transition savedTransition = transitionRepository.save(transition);
+        log.info("Transition added to process definition. processDefinitionId={}, transitionId={}, fromStepId={}, toStepId={}",
+                processDefinitionId, savedTransition.getId(), fromStepId, toStepId);
+        return savedTransition;
     }
 }

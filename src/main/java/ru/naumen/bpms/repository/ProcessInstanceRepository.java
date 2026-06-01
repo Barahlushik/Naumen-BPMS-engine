@@ -15,6 +15,8 @@ public interface ProcessInstanceRepository extends JpaRepository<ProcessInstance
 
     List<ProcessInstance> findByOwnerIdAndStatus(Long ownerId, ProcessStatus status);
 
+    List<ProcessInstance> findByOwnerId(Long ownerId);
+
     @EntityGraph(attributePaths = {"participants"})
     Optional<ProcessInstance> findWithParticipantsById(Long id);
 

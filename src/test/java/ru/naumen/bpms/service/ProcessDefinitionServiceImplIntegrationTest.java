@@ -13,6 +13,7 @@ import ru.naumen.bpms.repository.ProcessDefinitionRepository;
 import ru.naumen.bpms.repository.StepDefinitionRepository;
 import ru.naumen.bpms.repository.TransitionRepository;
 import ru.naumen.bpms.service.exception.process.*;
+import ru.naumen.bpms.testsupport.PostgreSqlTestContainerSupport;
 
 import java.util.List;
 
@@ -21,7 +22,7 @@ import static org.assertj.core.api.AssertionsForClassTypes.assertThatThrownBy;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class ProcessDefinitionServiceImplIntegrationTest {
+class ProcessDefinitionServiceImplIntegrationTest extends PostgreSqlTestContainerSupport {
 
     @Autowired
     private ProcessDefinitionService processDefinitionService;
@@ -296,7 +297,7 @@ class ProcessDefinitionServiceImplIntegrationTest {
         end.setProcessDefinition(definition);
         end = stepDefinitionRepository.save(end);
 
-        Transition transition = new Transition(end, start, "approved");
+        Transition transition = new Transition(start, end, "approved");
         transition.setName("start_to_end");
         transition.setFromStep(start);
         transition.setProcessDefinition(definition);

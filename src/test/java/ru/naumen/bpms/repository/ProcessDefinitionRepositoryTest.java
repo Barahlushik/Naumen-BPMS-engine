@@ -9,6 +9,7 @@ import org.springframework.test.context.ActiveProfiles;
 import ru.naumen.bpms.model.ProcessDefinition;
 import ru.naumen.bpms.model.StepDefinition;
 import ru.naumen.bpms.model.StepType;
+import ru.naumen.bpms.testsupport.PostgreSqlTestContainerSupport;
 
 import java.util.Optional;
 
@@ -17,7 +18,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class ProcessDefinitionRepositoryTest {
+class ProcessDefinitionRepositoryTest extends PostgreSqlTestContainerSupport {
 
     @Autowired
     private ProcessDefinitionRepository processDefinitionRepository;

@@ -16,6 +16,7 @@ import org.springframework.test.context.ActiveProfiles;
 import ru.naumen.bpms.model.User;
 import ru.naumen.bpms.model.UserRole;
 import ru.naumen.bpms.repository.UserRepository;
+import ru.naumen.bpms.testsupport.PostgreSqlTestContainerSupport;
 
 import java.time.Duration;
 
@@ -23,7 +24,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-class AuthSeleniumTest {
+class AuthSeleniumTest extends PostgreSqlTestContainerSupport {
 
     @LocalServerPort
     private int port;

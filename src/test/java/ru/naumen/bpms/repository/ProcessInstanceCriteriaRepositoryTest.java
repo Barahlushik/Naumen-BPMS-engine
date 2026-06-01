@@ -9,6 +9,7 @@ import org.springframework.context.annotation.Import;
 import org.springframework.test.context.ActiveProfiles;
 import ru.naumen.bpms.model.*;
 import ru.naumen.bpms.repository.criteria.impl.ProcessInstanceRepositoryImpl;
+import ru.naumen.bpms.testsupport.PostgreSqlTestContainerSupport;
 
 import java.util.List;
 import java.util.Optional;
@@ -19,7 +20,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
 @Import(ProcessInstanceRepositoryImpl.class)
-class ProcessInstanceCriteriaRepositoryTest {
+class ProcessInstanceCriteriaRepositoryTest extends PostgreSqlTestContainerSupport {
 
     @Autowired
     private ProcessInstanceRepository processInstanceRepository;

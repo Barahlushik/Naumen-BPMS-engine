@@ -3,6 +3,8 @@ package ru.naumen.bpms.service;
 import ru.naumen.bpms.model.User;
 import ru.naumen.bpms.model.UserRole;
 
+import java.util.List;
+
 public interface UserService {
 
     User createUser(String username,
@@ -16,6 +18,8 @@ public interface UserService {
 
     User getUserByUsername(String username);
 
+    List<User> getAllUsers();
+
     User updateUser(Long userId,
                     String username,
                     String displayName,
@@ -23,5 +27,6 @@ public interface UserService {
                     UserRole role,
                     boolean active);
 
+    void deleteUser(Long userId);
 
 }

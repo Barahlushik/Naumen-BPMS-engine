@@ -17,6 +17,15 @@ public interface ProcessDefinitionService extends ProcessService<ProcessDefiniti
 
     ProcessDefinition getProcessWithStepsAndTransitions(@NotNull @Positive Long id);
 
+    ProcessDefinition getProcessByStepId(@NotNull @Positive Long stepId);
+
+    List<ProcessDefinition> getAllProcessesWithStepsAndTransitions();
+
+    ProcessDefinition updateProcess(@NotNull @Positive Long id,
+                                    @NotBlank String title,
+                                    String description,
+                                    String category);
+
     List<StepDefinition> getSteps(@NotNull @Positive Long processDefinitionId);
 
     List<Transition> getTransitions(@NotNull @Positive Long processDefinitionId);

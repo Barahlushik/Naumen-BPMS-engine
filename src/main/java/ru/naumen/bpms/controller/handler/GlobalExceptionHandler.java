@@ -3,8 +3,10 @@ package ru.naumen.bpms.controller.handler;
 
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.validation.ConstraintViolationException;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.access.AccessDeniedException;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -21,6 +23,7 @@ import java.time.LocalDateTime;
 import java.util.stream.Collectors;
 
 @ControllerAdvice
+@Slf4j
 public class GlobalExceptionHandler {
 
     @ExceptionHandler({
@@ -35,6 +38,8 @@ public class GlobalExceptionHandler {
             BpmsException ex,
             HttpServletRequest request
     ) {
+        log.info("Resource was not found. path={}, errorCode={}, message={}",
+                request.getRequestURI(), ex.getErrorCode(), ex.getMessage());
         return buildResponse(ex, request, HttpStatus.NOT_FOUND);
     }
 
@@ -43,6 +48,8 @@ public class GlobalExceptionHandler {
             UserAlreadyExistException ex,
             HttpServletRequest request
     ) {
+        log.warn("Business conflict. path={}, errorCode={}, message={}",
+                request.getRequestURI(), ex.getErrorCode(), ex.getMessage());
         return buildResponse(ex, request, HttpStatus.CONFLICT);
     }
 
@@ -51,6 +58,8 @@ public class GlobalExceptionHandler {
             BpmsException ex,
             HttpServletRequest request
     ) {
+        log.warn("Business rule violation. path={}, errorCode={}, message={}",
+                request.getRequestURI(), ex.getErrorCode(), ex.getMessage());
         return buildResponse(ex, request, HttpStatus.BAD_REQUEST);
     }
 
@@ -74,6 +83,8 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
 
+        log.warn("Request body validation failed. path={}, message={}", request.getRequestURI(), response.message());
+
         return ResponseEntity.badRequest().body(response);
     }
 
@@ -96,6 +107,8 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
 
+        log.warn("Request parameter validation failed. path={}, message={}", request.getRequestURI(), response.message());
+
         return ResponseEntity.badRequest().body(response);
     }
 
@@ -113,7 +126,28 @@ public class GlobalExceptionHandler {
                 request.getRequestURI()
         );
 
+        log.warn("Illegal argument. path={}, message={}", request.getRequestURI(), ex.getMessage());
+
         return ResponseEntity.badRequest().body(response);
+    }
+
+    @ExceptionHandler(AccessDeniedException.class)
+    public ResponseEntity<ApiErrorResponse> handleAccessDenied(
+            AccessDeniedException ex,
+            HttpServletRequest request
+    ) {
+        ApiErrorResponse response = new ApiErrorResponse(
+                LocalDateTime.now(),
+                HttpStatus.FORBIDDEN.value(),
+                HttpStatus.FORBIDDEN.getReasonPhrase(),
+                "ACCESS_DENIED",
+                ex.getMessage(),
+                request.getRequestURI()
+        );
+
+        log.warn("Access denied. path={}, message={}", request.getRequestURI(), ex.getMessage());
+
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(response);
     }
 
     @ExceptionHandler(Exception.class)
@@ -129,6 +163,8 @@ public class GlobalExceptionHandler {
                 "Внутренняя ошибка сервера.",
                 request.getRequestURI()
         );
+
+        log.error("Unexpected server error. path={}", request.getRequestURI(), ex);
 
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
     }

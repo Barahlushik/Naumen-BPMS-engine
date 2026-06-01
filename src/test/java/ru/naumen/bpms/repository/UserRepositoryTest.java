@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import ru.naumen.bpms.model.User;
 import ru.naumen.bpms.model.UserRole;
+import ru.naumen.bpms.testsupport.PostgreSqlTestContainerSupport;
 
 import java.util.Optional;
 
@@ -15,7 +16,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class UserRepositoryTest {
+class UserRepositoryTest extends PostgreSqlTestContainerSupport {
 
     @jakarta.annotation.Resource
     private UserRepository userRepository;

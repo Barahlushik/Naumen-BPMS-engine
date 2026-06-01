@@ -5,6 +5,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.transaction.support.TransactionTemplate;
 import org.thymeleaf.context.Context;
 import org.thymeleaf.spring6.SpringTemplateEngine;
+import lombok.extern.slf4j.Slf4j;
 import ru.naumen.bpms.model.ProcessDefinition;
 import ru.naumen.bpms.model.report.Report;
 import ru.naumen.bpms.model.report.ReportStatus;
@@ -21,6 +22,7 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.atomic.AtomicReference;
 
 @Service
+@Slf4j
 public class ReportServiceImpl implements ReportService {
 
     private final ReportRepository reportRepository;
@@ -45,7 +47,9 @@ public class ReportServiceImpl implements ReportService {
     @Transactional
     public Long createReport() {
         Report report = Report.created();
-        return reportRepository.save(report).getId();
+        Long reportId = reportRepository.save(report).getId();
+        log.info("Report created. reportId={}", reportId);
+        return reportId;
     }
 
     @Override
@@ -81,11 +85,13 @@ public class ReportServiceImpl implements ReportService {
 
     @Override
     public CompletableFuture<Void> generateReportAsync(Long reportId) {
+        log.info("Report async generation requested. reportId={}", reportId);
         return CompletableFuture.runAsync(() -> generateReport(reportId));
     }
 
     private void generateReport(Long reportId) {
         long reportStartTime = System.currentTimeMillis();
+        log.info("Report generation started. reportId={}", reportId);
 
         AtomicReference<Long> usersCount = new AtomicReference<>();
         AtomicReference<Long> usersElapsedTime = new AtomicReference<>();
@@ -130,6 +136,7 @@ public class ReportServiceImpl implements ReportService {
 
             Throwable throwable = error.get();
             if (throwable != null) {
+                log.error("Report generation worker failed. reportId={}", reportId, throwable);
                 markReportAsError(reportId, throwable);
                 return;
             }
@@ -145,11 +152,14 @@ public class ReportServiceImpl implements ReportService {
             );
 
             markReportAsCompleted(reportId, html);
+            log.info("Report generation completed. reportId={}, elapsedMs={}", reportId, totalElapsedTime);
 
         } catch (InterruptedException ex) {
             Thread.currentThread().interrupt();
+            log.warn("Report generation was interrupted. reportId={}", reportId, ex);
             markReportAsError(reportId, ex);
         } catch (Throwable throwable) {
+            log.error("Report generation failed. reportId={}", reportId, throwable);
             markReportAsError(reportId, throwable);
         }
     }
@@ -180,6 +190,7 @@ public class ReportServiceImpl implements ReportService {
             report.setContent(html);
 
             reportRepository.save(report);
+            log.info("Report marked as completed. reportId={}", reportId);
         });
     }
 
@@ -195,6 +206,8 @@ public class ReportServiceImpl implements ReportService {
             ));
 
             reportRepository.save(report);
+            log.warn("Report marked as failed. reportId={}, errorType={}, message={}",
+                    reportId, throwable.getClass().getSimpleName(), throwable.getMessage());
         });
     }
 

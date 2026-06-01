@@ -1,10 +1,12 @@
 package ru.naumen.bpms.service.impl;
 
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.validation.annotation.Validated;
 import ru.naumen.bpms.model.*;
 import ru.naumen.bpms.repository.*;
+import ru.naumen.bpms.service.ProcessDefinitionValidationService;
 import ru.naumen.bpms.service.ProcessInstanceService;
 import ru.naumen.bpms.service.exception.process.ProcessDefinitionNotFoundException;
 import ru.naumen.bpms.service.exception.process.ProcessInstanceException;
@@ -16,6 +18,7 @@ import java.util.List;
 
 @Service
 @Validated
+@Slf4j
 public class ProcessInstanceServiceImpl implements ProcessInstanceService {
 
     private final ProcessInstanceRepository processInstanceRepository;
@@ -23,17 +26,20 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
     private final StepDefinitionRepository stepDefinitionRepository;
     private final TransitionRepository transitionRepository;
     private final UserRepository userRepository;
+    private final ProcessDefinitionValidationService processDefinitionValidationService;
 
     public ProcessInstanceServiceImpl(ProcessInstanceRepository processInstanceRepository,
                                       ProcessDefinitionRepository processDefinitionRepository,
                                       StepDefinitionRepository stepDefinitionRepository,
                                       TransitionRepository transitionRepository,
-                                      UserRepository userRepository) {
+                                      UserRepository userRepository,
+                                      ProcessDefinitionValidationService processDefinitionValidationService) {
         this.processInstanceRepository = processInstanceRepository;
         this.processDefinitionRepository = processDefinitionRepository;
         this.stepDefinitionRepository = stepDefinitionRepository;
         this.transitionRepository = transitionRepository;
         this.userRepository = userRepository;
+        this.processDefinitionValidationService = processDefinitionValidationService;
     }
 
     @Override
@@ -68,7 +74,13 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
             );
         }
 
-        return processInstanceRepository.save(process);
+        ProcessInstance savedProcess = processInstanceRepository.save(process);
+        log.info("Process instance created. processInstanceId={}, processDefinitionId={}, ownerId={}, currentStepId={}",
+                savedProcess.getId(),
+                savedProcess.getProcessDefinition().getId(),
+                savedProcess.getOwner().getId(),
+                savedProcess.getCurrentStep().getId());
+        return savedProcess;
     }
 
     @Override
@@ -131,7 +143,13 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
         existing.setOwner(process.getOwner());
         existing.setCurrentStep(process.getCurrentStep());
 
-        return processInstanceRepository.save(existing);
+        ProcessInstance savedProcess = processInstanceRepository.save(existing);
+        log.info("Process instance updated. processInstanceId={}, processDefinitionId={}, ownerId={}, currentStepId={}",
+                savedProcess.getId(),
+                savedProcess.getProcessDefinition().getId(),
+                savedProcess.getOwner().getId(),
+                savedProcess.getCurrentStep().getId());
+        return savedProcess;
     }
 
     @Override
@@ -143,6 +161,7 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
                 ));
 
         processInstanceRepository.delete(existing);
+        log.info("Process instance deleted. processInstanceId={}", id);
     }
 
     /**
@@ -160,6 +179,8 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
     public ProcessInstance startProcess(Long processDefinitionId,
                                         Long ownerId,
                                         Long startStepId) {
+
+        processDefinitionValidationService.assertValid(processDefinitionId);
 
         ProcessDefinition definition = processDefinitionRepository.findWithStepsById(processDefinitionId)
                 .orElseThrow(() -> new ProcessDefinitionNotFoundException(
@@ -197,6 +218,8 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
         ProcessInstance savedInstance = processInstanceRepository.saveAndFlush(processInstance);
 
         if (!owner.isActive()) {
+            log.warn("Process start rejected: owner is inactive. processDefinitionId={}, ownerId={}, startStepId={}",
+                    processDefinitionId, ownerId, startStepId);
             throw new ProcessInstanceException(
                     String.format("Пользователь с id=%d неактивен и не может участвовать в процессе.", owner.getId())
             );
@@ -204,7 +227,10 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
 
         savedInstance.addParticipant(owner);
 
-        return processInstanceRepository.save(savedInstance);
+        ProcessInstance startedInstance = processInstanceRepository.save(savedInstance);
+        log.info("Process instance started. processInstanceId={}, processDefinitionId={}, ownerId={}, startStepId={}",
+                startedInstance.getId(), processDefinitionId, ownerId, startStepId);
+        return startedInstance;
     }
 
     @Override
@@ -212,6 +238,12 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
     public List<ProcessInstance> getProcessesByOwnerAndStatus(Long ownerId,
                                                               ProcessStatus status) {
         return processInstanceRepository.findByOwnerIdAndStatus(ownerId, status);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<ProcessInstance> getProcessesByOwner(Long ownerId) {
+        return processInstanceRepository.findByOwnerId(ownerId);
     }
 
     @Override
@@ -269,8 +301,12 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
             );
         }
 
+        Long previousStepId = processInstance.getCurrentStep() != null ? processInstance.getCurrentStep().getId() : null;
         processInstance.moveToStep(nextStep);
-        return processInstanceRepository.save(processInstance);
+        ProcessInstance savedProcess = processInstanceRepository.save(processInstance);
+        log.info("Process instance moved to step. processInstanceId={}, fromStepId={}, toStepId={}",
+                processInstanceId, previousStepId, nextStepId);
+        return savedProcess;
     }
 
     @Override
@@ -353,8 +389,12 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
             );
         }
 
+        Long previousStepId = processInstance.getCurrentStep().getId();
         processInstance.moveToStep(transition.getToStep());
-        return processInstanceRepository.save(processInstance);
+        ProcessInstance savedProcess = processInstanceRepository.save(processInstance);
+        log.info("Transition executed. processInstanceId={}, transitionId={}, fromStepId={}, toStepId={}",
+                processInstanceId, transitionId, previousStepId, transition.getToStep().getId());
+        return savedProcess;
     }
 
     @Override
@@ -378,7 +418,9 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
         }
 
         processInstance.complete();
-        return processInstanceRepository.save(processInstance);
+        ProcessInstance savedProcess = processInstanceRepository.save(processInstance);
+        log.info("Process instance completed. processInstanceId={}", processInstanceId);
+        return savedProcess;
     }
 
     @Override
@@ -402,7 +444,9 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
         }
 
         processInstance.cancel();
-        return processInstanceRepository.save(processInstance);
+        ProcessInstance savedProcess = processInstanceRepository.save(processInstance);
+        log.info("Process instance cancelled. processInstanceId={}", processInstanceId);
+        return savedProcess;
     }
 
     @Override
@@ -426,7 +470,9 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
         }
 
         processInstance.addParticipant(user);
-        return processInstanceRepository.save(processInstance);
+        ProcessInstance savedProcess = processInstanceRepository.save(processInstance);
+        log.info("Participant added to process instance. processInstanceId={}, userId={}", processInstanceId, userId);
+        return savedProcess;
     }
 
     @Override
@@ -450,6 +496,8 @@ public class ProcessInstanceServiceImpl implements ProcessInstanceService {
         }
 
         processInstance.removeParticipant(user);
-        return processInstanceRepository.save(processInstance);
+        ProcessInstance savedProcess = processInstanceRepository.save(processInstance);
+        log.info("Participant removed from process instance. processInstanceId={}, userId={}", processInstanceId, userId);
+        return savedProcess;
     }
 }

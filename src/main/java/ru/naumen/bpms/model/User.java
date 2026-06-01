@@ -7,7 +7,6 @@ import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Size;
 
 import java.util.Objects;
-import java.util.regex.Pattern;
 
 @Entity
 @Table(
@@ -18,9 +17,6 @@ import java.util.regex.Pattern;
         }
 )
 public class User {
-
-    private static final Pattern PASSWORD_PATTERN =
-            Pattern.compile("^(?=.*[a-z])(?=.*[A-Z])[A-Za-z]{12,}$");
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -117,7 +113,7 @@ public class User {
         this.active = active;
     }
 
-    public String getPassword() {
+    public String getPasswordHash() {
         return passwordHash;
     }
 
@@ -136,12 +132,6 @@ public class User {
     public boolean hasRole(UserRole role) {
         return this.role == role;
     }
-
-
-    private String hashPassword(String rawPassword) {
-        return "{need hash!}" + rawPassword;
-    }
-
 
     @Override
     public boolean equals(Object o) {

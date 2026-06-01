@@ -17,6 +17,8 @@ public interface ProcessInstanceService extends ProcessService<ProcessInstance, 
     List<ProcessInstance> getProcessesByOwnerAndStatus(@NotNull @Positive Long ownerId,
                                                        @NotNull ProcessStatus status);
 
+    List<ProcessInstance> getProcessesByOwner(@NotNull @Positive Long ownerId);
+
     List<Transition> getAvailableTransitions(@NotNull @Positive Long processInstanceId);
 
     ProcessInstance moveToStep(@NotNull @Positive Long processInstanceId,

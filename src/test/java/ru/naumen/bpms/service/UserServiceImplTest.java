@@ -12,7 +12,7 @@ import ru.naumen.bpms.model.UserRole;
 import ru.naumen.bpms.repository.UserRepository;
 import ru.naumen.bpms.service.exception.user.UserAlreadyExistException;
 import ru.naumen.bpms.service.exception.user.UserNotFoundException;
-import ru.naumen.bpms.service.impl.UserServiceFacade;
+import ru.naumen.bpms.service.impl.UserServiceImpl;
 
 import java.util.Optional;
 
@@ -21,7 +21,7 @@ import static org.assertj.core.api.Assertions.assertThatThrownBy;
 import static org.mockito.Mockito.*;
 
 @ExtendWith(MockitoExtension.class)
-class UserServiceFacadeTest {
+class UserServiceImplTest {
 
     @Mock
     private UserRepository userRepository;
@@ -30,7 +30,7 @@ class UserServiceFacadeTest {
     private PasswordEncoder passwordEncoder;
 
     @InjectMocks
-    private UserServiceFacade userService;
+    private UserServiceImpl userService;
 
     @Test
     @DisplayName("createUser должен создать пользователя с закодированным паролем")
@@ -55,7 +55,7 @@ class UserServiceFacadeTest {
         assertThat(result.getEmail()).isEqualTo("john@example.com");
         assertThat(result.getRole()).isEqualTo(UserRole.ROLE_USER);
         assertThat(result.isActive()).isTrue();
-        assertThat(result.getPassword()).isEqualTo("$2a$encoded");
+        assertThat(result.getPasswordHash()).isEqualTo("$2a$encoded");
 
         verify(passwordEncoder).encode("RawPassword123");
         verify(userRepository).save(any(User.class));

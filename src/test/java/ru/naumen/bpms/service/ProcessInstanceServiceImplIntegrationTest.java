@@ -10,13 +10,14 @@ import ru.naumen.bpms.model.*;
 import ru.naumen.bpms.repository.*;
 import ru.naumen.bpms.service.exception.process.ProcessInstanceException;
 import ru.naumen.bpms.service.impl.ProcessInstanceServiceImpl;
+import ru.naumen.bpms.testsupport.PostgreSqlTestContainerSupport;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
 
 @SpringBootTest
 @ActiveProfiles("test")
-class ProcessInstanceServiceImplIntegrationTest {
+class ProcessInstanceServiceImplIntegrationTest extends PostgreSqlTestContainerSupport {
 
     @Autowired
     private ProcessInstanceServiceImpl processInstanceService;
@@ -62,6 +63,15 @@ class ProcessInstanceServiceImplIntegrationTest {
         startStep.setProcessDefinition(definition);
         startStep = stepDefinitionRepository.save(startStep);
 
+        StepDefinition endStep = new StepDefinition("End", StepType.END_EVENT);
+        endStep.setProcessDefinition(definition);
+        endStep = stepDefinitionRepository.save(endStep);
+
+        Transition transition = new Transition(startStep, endStep, null);
+        transition.setName("start_to_end");
+        transition.setProcessDefinition(definition);
+        transitionRepository.save(transition);
+
         ProcessInstance created = processInstanceService.startProcess(
                 definition.getId(),
                 owner.getId(),
@@ -97,6 +107,15 @@ class ProcessInstanceServiceImplIntegrationTest {
         StepDefinition startStep = new StepDefinition("Start", StepType.START_EVENT);
         startStep.setProcessDefinition(definition);
         startStep = stepDefinitionRepository.save(startStep);
+
+        StepDefinition endStep = new StepDefinition("End", StepType.END_EVENT);
+        endStep.setProcessDefinition(definition);
+        endStep = stepDefinitionRepository.save(endStep);
+
+        Transition transition = new Transition(startStep, endStep, null);
+        transition.setName("start_to_end");
+        transition.setProcessDefinition(definition);
+        transitionRepository.save(transition);
 
         long beforeCount = processInstanceRepository.count();
 

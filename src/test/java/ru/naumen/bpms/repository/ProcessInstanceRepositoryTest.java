@@ -7,6 +7,7 @@ import org.springframework.boot.test.autoconfigure.jdbc.AutoConfigureTestDatabas
 import org.springframework.boot.test.autoconfigure.orm.jpa.DataJpaTest;
 import org.springframework.test.context.ActiveProfiles;
 import ru.naumen.bpms.model.*;
+import ru.naumen.bpms.testsupport.PostgreSqlTestContainerSupport;
 
 import java.util.List;
 import java.util.Optional;
@@ -16,7 +17,7 @@ import static org.assertj.core.api.Assertions.assertThat;
 @DataJpaTest
 @ActiveProfiles("test")
 @AutoConfigureTestDatabase(replace = AutoConfigureTestDatabase.Replace.NONE)
-class ProcessInstanceRepositoryTest {
+class ProcessInstanceRepositoryTest extends PostgreSqlTestContainerSupport {
 
     @Autowired
     private ProcessInstanceRepository processInstanceRepository;

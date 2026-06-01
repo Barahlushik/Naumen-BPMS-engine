@@ -16,6 +16,7 @@ import ru.naumen.bpms.model.User;
 import ru.naumen.bpms.model.UserRole;
 import ru.naumen.bpms.repository.ReportRepository;
 import ru.naumen.bpms.repository.UserRepository;
+import ru.naumen.bpms.testsupport.PostgreSqlTestContainerSupport;
 
 import static io.restassured.RestAssured.given;
 import static org.hamcrest.Matchers.*;
@@ -23,7 +24,7 @@ import static org.hamcrest.Matchers.*;
 
 @SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
 @ActiveProfiles("test")
-class ReportControllerRestAssuredTest {
+class ReportControllerRestAssuredTest extends PostgreSqlTestContainerSupport {
 
     @LocalServerPort
     private int port;
